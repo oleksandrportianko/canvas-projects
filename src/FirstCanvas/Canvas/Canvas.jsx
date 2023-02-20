@@ -1,13 +1,9 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 
 function Canvas() {
     const canvasRef = useRef(null);
-
-    console.log(canvasRef)
-
-    const handleKeyDown = (event) => {
-        console.log(event)
-    }
+    const [playerPosX, setPlayerPosX] = useState(10)
+    const [playerPosY, setPlayerPosY] = useState(10)
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -25,19 +21,58 @@ function Canvas() {
 
         // Draw the player image at the center of the canvas
         playerImage.onload = function () {
-            const playerX = 10;
-            const playerY = 10;
-            ctx.drawImage(playerImage, playerX, playerY);
+            ctx.drawImage(playerImage, playerPosX, playerPosY);
         }
-    }, []);
+
+        const handleKeyDown = (event) => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            switch(event.key) {
+                case 'w': {
+                    setPlayerPosY((prev) => {
+                        return prev - 2
+                    })
+                    ctx.drawImage(playerImage, playerPosX, playerPosY);
+                    break;
+                }
+                case 's': {
+                    setPlayerPosY((prev) => {
+                        return prev + 2
+                    })
+                    ctx.drawImage(playerImage, playerPosX, playerPosY);
+                    break;
+                }
+                case 'a': {
+                    setPlayerPosX((prev) => {
+                        return prev - 2
+                    })
+                    ctx.drawImage(playerImage, playerPosX, playerPosY);
+                    break;
+                }
+                case 'd': {
+                    setPlayerPosX((prev) => {
+                        return prev + 2
+                    })
+                    ctx.drawImage(playerImage, playerPosX, playerPosY);
+                    break;
+                }
+                default: {
+                    ctx.drawImage(playerImage, playerPosX, playerPosY);
+                    break;
+                }
+            }
+        }
+
+        window.addEventListener("keydown", handleKeyDown);
+        
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [playerPosX, playerPosY]);
 
     return (
         <canvas 
             ref={canvasRef}
-            onKeyDown={handleKeyDown}
             tabIndex={0}
             width={500} 
-            height={500} 
+            height={500}
         />
     );
 }
